@@ -8,8 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -22,6 +22,9 @@ public class Lemmikkipeli extends Application {
     Button leikiNappi = new Button("Leiki lemmikin kanssa");
     Button ruokiNappi = new Button("Ruoki lemmikkiä");
     Button uusiLemmikki = new Button("Luo uusi lemmikki");
+    TextField tfNimi = new TextField();
+    String[] lajit = {"Koira", "Kissa", "Marsu"};
+    ComboBox<String> lajiValinta = new ComboBox<>(FXCollections.observableArrayList(lajit));
 
 
     public static void main(String[] args) {
@@ -30,12 +33,13 @@ public class Lemmikkipeli extends Application {
 
     @Override
     public void start(Stage ikkuna) {
+        //lemmikkilista.add(new Lemmikki("Koira","Musti"));
         HBox ylaboksi = new HBox();
         ylaboksi.setSpacing(10);
         ylaboksi.getChildren().add(new Label("Valitse lemmikki:"));
         ComboBox<String> lemmikkiValinta = new ComboBox<>();
         if(!lemmikkilista.isEmpty()) {
-            for (int i = 0; i <= lemmikkilista.size(); i++) {
+            for (int i = 0; i < lemmikkilista.size(); i++) {
                 Lemmikki lemmikki = lemmikkilista.get(i);
                 nimilista.add(lemmikki.getNimi());
             }
@@ -48,6 +52,13 @@ public class Lemmikkipeli extends Application {
         ylaboksi.setAlignment(Pos.CENTER);
         ylaboksi.setPadding(new Insets(10,0,10,0));
         ylaboksi.setStyle("-fx-border-color: gray");
+
+
+        VBox lisaysIkkuna = new VBox();
+        lisaysIkkuna.getChildren().add(tfNimi);
+        tfNimi.setMaxWidth(100);
+        lisaysIkkuna.getChildren().add(lajiValinta);
+        lisaysIkkuna.setAlignment(Pos.CENTER);
 
         HBox alaboksi = new HBox();
         alaboksi.getChildren().add(leikiNappi);
@@ -62,6 +73,7 @@ public class Lemmikkipeli extends Application {
         BorderPane pohja = new BorderPane();
         pohja.setTop(ylaboksi);
         pohja.setBottom(alaboksi);
+        pohja.setCenter(lisaysIkkuna);
 
         Scene kehys = new Scene(pohja, 600, 450);
         ikkuna.setScene(kehys);
