@@ -47,6 +47,7 @@ public class Lemmikkipeli extends Application {
         ylaboksi.getChildren().add(lemmikkiValinta);
         ylaboksi.setAlignment(Pos.CENTER);
         ylaboksi.setPadding(new Insets(10,0,10,0));
+        ylaboksi.setStyle("-fx-border-color: gray");
 
         HBox alaboksi = new HBox();
         alaboksi.getChildren().add(leikiNappi);
@@ -55,6 +56,7 @@ public class Lemmikkipeli extends Application {
         alaboksi.setAlignment(Pos.CENTER);
         alaboksi.setSpacing(50);
         alaboksi.setPadding(new Insets(10, 0, 10, 0));
+        alaboksi.setStyle("-fx-border-color: gray");
 
 
         BorderPane pohja = new BorderPane();
