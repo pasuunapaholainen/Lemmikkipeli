@@ -10,9 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Lemmikkipeli extends Application {
     ArrayList<Lemmikki> lemmikkilista = new ArrayList<Lemmikki>();
@@ -28,7 +26,7 @@ public class Lemmikkipeli extends Application {
     RadioButton marsu = new RadioButton("Marsu");
     Button luo = new Button("Luo");
     boolean onJoNimi;
-
+    Button ponnahdusNappi = new Button("Ok");
 
     public static void main(String[] args) {
         launch(args);
@@ -36,6 +34,7 @@ public class Lemmikkipeli extends Application {
 
     @Override
     public void start(Stage ikkuna) {
+        // debuggaukseen
         //lemmikkilista.add(new Lemmikki("Koira","Musti"));
         HBox ylaboksi = new HBox();
         ylaboksi.setSpacing(10);
@@ -116,12 +115,27 @@ public class Lemmikkipeli extends Application {
             laji[0] = "Marsu";
         });
 
+        VBox ponnahdusPohja = new VBox();
+        ponnahdusPohja.getChildren().add(new Label("Lemmikeillä pitää olla eri nimet!"));
+        ponnahdusPohja.getChildren().add(ponnahdusNappi);
+        ponnahdusPohja.setAlignment(Pos.CENTER);
+        ponnahdusPohja.setSpacing(20);
+        Stage ponnnahdus = new Stage();
+        Scene ponnahdusKehys = new Scene(ponnahdusPohja, 200, 100);
+        ponnnahdus.setScene(ponnahdusKehys);
+        ponnahdusNappi.setOnAction(e -> {
+            ponnnahdus.close();
+        });
 
         luo.setOnAction(e -> {
+            onJoNimi = false;
             for(int i = 0; i<lemmikkilista.size();i++){
                 if(lemmikkilista.get(i).getNimi().equals(tfNimi.getText())){
                     onJoNimi = true;
                 }
+            }
+            if(onJoNimi){
+                ponnnahdus.show();
             }
             if(tfNimi.getText() != null && laji[0] != null && !onJoNimi){
 
@@ -131,19 +145,8 @@ public class Lemmikkipeli extends Application {
                 nimilista.add(nimi);
                 lemmikkiValinta.setItems(null);
                 lemmikkiValinta.setItems(FXCollections.observableArrayList(nimilista));
-                /*
-                if(!lemmikkilista.isEmpty()) {
-                    for (int i = 0; i < lemmikkilista.size(); i++) {
-                        Lemmikki lemmikki = lemmikkilista.get(i);
-                        nimilista.add(lemmikki.getNimi());
-                    }
-                    lemmikkiValinta.setItems(FXCollections.observableArrayList(nimilista));
-                }else {
-                    String[] tyhjaLista = {"Ei lemmikkejä"};
-                    lemmikkiValinta.setItems(FXCollections.observableArrayList(tyhjaLista));
-                }
 
-                 */
+                // debuggaukseen
                 System.out.println(lemmikkilista.getLast().toString());
             }
         });
@@ -158,14 +161,20 @@ public class Lemmikkipeli extends Application {
                         valittu = lemmikkilista.get(i);
                     }
                 }
-                //Väliaikainen
+
                 //TODO
+                // Väliaikainen muotoilu, loppuversioon kuvat
+
                 VBox lemmikkiIkkuna = new VBox();
                 lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()));
                 lemmikkiIkkuna.getChildren().add(new Label(valittu.getLaji()));
+                lemmikkiIkkuna.setAlignment(Pos.CENTER);
                 pohja.setCenter(lemmikkiIkkuna);
             }
 
         });
+        //TODO
+        // Toiminnallisuudet leikkimiselle ja ruokinnalle
+        // Tiedostoon tallentaminen
     }
 }

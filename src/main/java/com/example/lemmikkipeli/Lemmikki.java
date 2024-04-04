@@ -12,11 +12,15 @@ public class Lemmikki implements Serializable {
     public Lemmikki(){
         this.laji = "";
         this.nimi = "";
+        setViimeLeikki();
+        setViimeSyotto();
     }
 
     public Lemmikki(String laji, String nimi){
         this.laji = laji;
         this.nimi = nimi;
+        setViimeLeikki();
+        setViimeSyotto();
     }
 
     public void setLaji(String laji){
