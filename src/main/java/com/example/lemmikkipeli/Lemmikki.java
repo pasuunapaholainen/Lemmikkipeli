@@ -66,4 +66,9 @@ public class Lemmikki implements Serializable {
             return false;
         }
     }
+
+    @Override
+    public String toString(){
+        return "laji: " +laji+"\nnimi: "+nimi;
+    }
 }
