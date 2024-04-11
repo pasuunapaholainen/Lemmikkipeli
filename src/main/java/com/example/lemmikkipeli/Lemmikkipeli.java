@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 /**
  * Lemmikkipeli, jossa lemmikkejä pitää ruokkia ja niiden kanssa pitää leikkiä tietyin väliajoin.
+ * Itse ohjelmakoodista löytyy lisää kommentteja.
  *
  * @author Olli Tirkkonen
  */
