@@ -10,7 +10,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import java.io.*;
 import java.util.ArrayList;
 
@@ -18,7 +17,11 @@ import java.util.ArrayList;
 // Javadoc
 // Kuvat lemmikeille
 
-
+/**
+ * Lemmikkipeli, jossa lemmikkejä pitää ruokkia ja niiden kanssa pitää leikkiä tietyin väliajoin.
+ *
+ * @author Olli Tirkkonen
+ */
 public class Lemmikkipeli extends Application {
     private ArrayList<Lemmikki> lemmikkilista = new ArrayList<Lemmikki>();
     private ArrayList<String> nimilista = new ArrayList<String>();
@@ -27,8 +30,6 @@ public class Lemmikkipeli extends Application {
     private final Button ruokiNappi = new Button("Ruoki lemmikkiä");
     private final Button uusiLemmikki = new Button("Luo uusi lemmikki");
     private TextField tfNimi = new TextField();
-    //String[] lajit = {"Koira", "Kissa", "Marsu"};
-    //ComboBox<String> lajiValinta = new ComboBox<>(FXCollections.observableArrayList(lajit));
     private final RadioButton koira = new RadioButton("Koira");
     private final RadioButton kissa = new RadioButton("Kissa");
     private final RadioButton marsu = new RadioButton("Marsu");
@@ -42,6 +43,9 @@ public class Lemmikkipeli extends Application {
 
     @Override
     public void start(Stage ikkuna) {
+        /**
+         * Tässä kohdassa avataan mahdollisesti olemassa oleva tiedosta ja kirjoitetaan siinä olevat oliot välimuistiin.
+         */
         File lemmikkiTiedosto = new File(tiedostoNimi);
         if(lemmikkiTiedosto.exists()){
             ObjectInputStream lTiedosto = null;
@@ -63,8 +67,9 @@ public class Lemmikkipeli extends Application {
             }
         }
 
-        // debuggaukseen
-        // lemmikkilista.add(new Lemmikki("Koira","Musti"));
+        /**
+        * Luodaan yläpalkkiin valikko, josta jo luotuja lemmikkejä valitaan
+        */
         HBox ylaboksi = new HBox();
         ylaboksi.setSpacing(10);
         ylaboksi.getChildren().add(new Label("Valitse lemmikki:"));
@@ -84,6 +89,9 @@ public class Lemmikkipeli extends Application {
         ylaboksi.setPadding(new Insets(10,0,10,0));
         ylaboksi.setStyle("-fx-border-color: gray");
 
+        /**
+         * Luodaan uusi paneeli lemmikkien luomiselle
+         */
         HBox nimirivi = new HBox();
         nimirivi.getChildren().add(new Label("Lemmikin nimi: "));
         nimirivi.getChildren().add(tfNimi);
@@ -91,7 +99,6 @@ public class Lemmikkipeli extends Application {
         nimirivi.setAlignment(Pos.CENTER);
         HBox lajirivi = new HBox();
         lajirivi.getChildren().add(new Label("Lemmikin laji: "));
-        //lajirivi.getChildren().add(lajiValinta);
         VBox lemmikit = new VBox();
         lemmikit.getChildren().add(koira);
         lemmikit.getChildren().add(kissa);
@@ -105,6 +112,9 @@ public class Lemmikkipeli extends Application {
         lisaysIkkuna.getChildren().add(luo);
         lisaysIkkuna.setSpacing(10);
 
+        /**
+         * Luodaan uusi paneeli toimintonapeille
+         */
         HBox alaboksi = new HBox();
         alaboksi.getChildren().add(leikiNappi);
         alaboksi.getChildren().add(ruokiNappi);
@@ -114,12 +124,16 @@ public class Lemmikkipeli extends Application {
         alaboksi.setPadding(new Insets(10, 0, 10, 0));
         alaboksi.setStyle("-fx-border-color: gray");
 
-
+        /**
+         * Lisätään yllä mainitut paneelit pohjapaneeliin
+         */
         BorderPane pohja = new BorderPane();
         pohja.setTop(ylaboksi);
         pohja.setBottom(alaboksi);
-        //pohja.setCenter(lisaysIkkuna);
 
+        /**
+         * Luodaan ikkuna
+         */
         Scene kehys = new Scene(pohja, 600, 450);
         ikkuna.setScene(kehys);
         ikkuna.setTitle("Lemmikkipeli");
@@ -144,6 +158,9 @@ public class Lemmikkipeli extends Application {
             laji[0] = "Marsu";
         });
 
+        /**
+         * Luodaan ponnahdusikkuna ilmoittamaan käyttäjälle toimintojen rajoitteista
+         */
         VBox ponnahdusPohja = new VBox();
         ponnahdusPohja.getChildren().add(new Label("Lemmikeillä pitää olla eri nimet!"));
         ponnahdusPohja.getChildren().add(ponnahdusNappi);
@@ -156,6 +173,11 @@ public class Lemmikkipeli extends Application {
             ponnnahdus.close();
         });
 
+        /**
+         * Toiminto <code>luo</code> -napille.
+         * Nappia painamalla otetaan luontipaneeliin syötetyt tiedot
+         * ja asetetaan ne uuteen <code>Lemmikki</code> -olioon
+         */
         luo.setOnAction(e -> {
             onJoNimi = false;
             for(int i = 0; i<lemmikkilista.size();i++){
@@ -169,17 +191,20 @@ public class Lemmikkipeli extends Application {
             if(tfNimi.getText() != null && laji[0] != null && !onJoNimi){
 
                 String nimi = tfNimi.getText();
-                System.out.println(laji[0]);
                 lemmikkilista.add(new Lemmikki(laji[0], nimi));
                 nimilista.add(nimi);
                 lemmikkiValinta.setItems(null);
                 lemmikkiValinta.setItems(FXCollections.observableArrayList(nimilista));
-
-                // debuggaukseen
-                // System.out.println(lemmikkilista.getLast().toString());
             }
         });
 
+        /**
+         * Luodaan toiminto yläpalkin valintalaatikolle.
+         * Lemmikin valittaessa tiedot lemmikistä tallennetaan <code>ArrayList</code> iin
+         * ja lemmikin tiedot tulevat näytölle näkyviin.
+         * <p>
+         * Minulla oli suunnitelmissa piirtää lemmikeistä kuvat, mutta deadlinet ja graafiset taidot tulivat vastaan.
+         */
         lemmikkiValinta.setOnAction(e -> {
             if(!lemmikkiValinta.getValue().equals("Ei lemmikkejä")) {
                 String nimi = lemmikkiValinta.getValue();
@@ -210,6 +235,11 @@ public class Lemmikkipeli extends Application {
 
         });
 
+        /**
+         * Luodaan toiminto alapalkin leiki-napille.
+         * Nappi asettaa lemmikin viimeisimmäksi leikkimishetkeksi napinpainallushetken
+         * ja päivittää paneelin vastaamaan tilannetta.
+         */
         leikiNappi.setOnAction(e -> {
             if(!lemmikkiValinta.getValue().equals("Ei lemmikkejä")) {
                 String nimi = lemmikkiValinta.getValue();
@@ -241,6 +271,11 @@ public class Lemmikkipeli extends Application {
             }
         });
 
+        /**
+         * Luodaan toiminto alapalkin ruoki-napille.
+         * Nappi asettaa lemmikin viimeisimmäksi ruokkimishetkeksi napinpainallushetken
+         * ja päivittää paneelin vastaamaan tilannetta.
+         */
         ruokiNappi.setOnAction(e -> {
             if(!lemmikkiValinta.getValue().equals("Ei lemmikkejä")) {
                 String nimi = lemmikkiValinta.getValue();
@@ -271,11 +306,16 @@ public class Lemmikkipeli extends Application {
                 pohja.setCenter(lemmikkiIkkuna);
             }
         });
+
+        /**
+         * Ikkunan sulkiessa tallennetaan vielä tiedot tiedostoon
+         */
         ikkuna.setOnCloseRequest(e ->{
             ObjectOutputStream kTiedosto = null;
             try{
                 kTiedosto = new ObjectOutputStream(new FileOutputStream(tiedostoNimi));
                 kTiedosto.writeObject(lemmikkilista);
+                kTiedosto.close();
             }catch(IOException exception){
                 exception.printStackTrace();
             }
