@@ -10,23 +10,31 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.io.*;
 import java.util.ArrayList;
 
+//TODO
+// Javadoc
+// Kuvat lemmikeille
+
+
 public class Lemmikkipeli extends Application {
-    ArrayList<Lemmikki> lemmikkilista = new ArrayList<Lemmikki>();
-    ArrayList<String> nimilista = new ArrayList<String>();
-    Button leikiNappi = new Button("Leiki lemmikin kanssa");
-    Button ruokiNappi = new Button("Ruoki lemmikkiä");
-    Button uusiLemmikki = new Button("Luo uusi lemmikki");
-    TextField tfNimi = new TextField();
+    private ArrayList<Lemmikki> lemmikkilista = new ArrayList<Lemmikki>();
+    private ArrayList<String> nimilista = new ArrayList<String>();
+    private final String tiedostoNimi = "lemmikit.dat";
+    private final Button leikiNappi = new Button("Leiki lemmikin kanssa");
+    private final Button ruokiNappi = new Button("Ruoki lemmikkiä");
+    private final Button uusiLemmikki = new Button("Luo uusi lemmikki");
+    private TextField tfNimi = new TextField();
     //String[] lajit = {"Koira", "Kissa", "Marsu"};
     //ComboBox<String> lajiValinta = new ComboBox<>(FXCollections.observableArrayList(lajit));
-    RadioButton koira = new RadioButton("Koira");
-    RadioButton kissa = new RadioButton("Kissa");
-    RadioButton marsu = new RadioButton("Marsu");
-    Button luo = new Button("Luo");
-    boolean onJoNimi;
-    Button ponnahdusNappi = new Button("Ok");
+    private final RadioButton koira = new RadioButton("Koira");
+    private final RadioButton kissa = new RadioButton("Kissa");
+    private final RadioButton marsu = new RadioButton("Marsu");
+    private final Button luo = new Button("Luo");
+    private boolean onJoNimi;
+    private final Button ponnahdusNappi = new Button("Ok");
 
     public static void main(String[] args) {
         launch(args);
@@ -34,8 +42,29 @@ public class Lemmikkipeli extends Application {
 
     @Override
     public void start(Stage ikkuna) {
+        File lemmikkiTiedosto = new File(tiedostoNimi);
+        if(lemmikkiTiedosto.exists()){
+            ObjectInputStream lTiedosto = null;
+            ArrayList<Lemmikki> lemmikitTiedosto = null;
+            try{
+                lTiedosto = new ObjectInputStream(new FileInputStream(tiedostoNimi));
+                lemmikitTiedosto = (ArrayList<Lemmikki>) lTiedosto.readObject();
+            } catch(IOException | ClassNotFoundException e){
+                e.printStackTrace();
+            } finally {
+                if(!lemmikitTiedosto.isEmpty()){
+                    lemmikkilista.addAll(lemmikitTiedosto);
+                }
+                try {
+                    lTiedosto.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
         // debuggaukseen
-        //lemmikkilista.add(new Lemmikki("Koira","Musti"));
+        // lemmikkilista.add(new Lemmikki("Koira","Musti"));
         HBox ylaboksi = new HBox();
         ylaboksi.setSpacing(10);
         ylaboksi.getChildren().add(new Label("Valitse lemmikki:"));
@@ -147,7 +176,7 @@ public class Lemmikkipeli extends Application {
                 lemmikkiValinta.setItems(FXCollections.observableArrayList(nimilista));
 
                 // debuggaukseen
-                System.out.println(lemmikkilista.getLast().toString());
+                // System.out.println(lemmikkilista.getLast().toString());
             }
         });
 
@@ -168,13 +197,88 @@ public class Lemmikkipeli extends Application {
                 VBox lemmikkiIkkuna = new VBox();
                 lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()));
                 lemmikkiIkkuna.getChildren().add(new Label(valittu.getLaji()));
+                // System.out.println("aikaa viime syötöstä " + (System.currentTimeMillis()-valittu.getViimeSyotto()));
+                if(valittu.pitkaAikaSyotosta()){
+                    lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()+" on nälkäinen."));
+                }
+                if (valittu.pitkaAikaLeikista()){
+                    lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()+" on tylsistynyt."));
+                }
                 lemmikkiIkkuna.setAlignment(Pos.CENTER);
                 pohja.setCenter(lemmikkiIkkuna);
             }
 
         });
-        //TODO
-        // Toiminnallisuudet leikkimiselle ja ruokinnalle
-        // Tiedostoon tallentaminen
+
+        leikiNappi.setOnAction(e -> {
+            if(!lemmikkiValinta.getValue().equals("Ei lemmikkejä")) {
+                String nimi = lemmikkiValinta.getValue();
+                int listanJasen = 0;
+                //System.out.println(nimi);
+                Lemmikki valittu = null;
+                for (int i = 0; i < lemmikkilista.size(); i++) {
+                    if (lemmikkilista.get(i).getNimi().equals(nimi)) {
+                        valittu = lemmikkilista.get(i);
+                        listanJasen = i;
+                    }
+                }
+                valittu.setViimeLeikki();
+                //TODO
+                // Väliaikainen muotoilu, loppuversioon kuvat
+                valittu = lemmikkilista.get(listanJasen);
+                VBox lemmikkiIkkuna = new VBox();
+                lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()));
+                lemmikkiIkkuna.getChildren().add(new Label(valittu.getLaji()));
+                // System.out.println("aikaa viime leikistä " + (System.currentTimeMillis()-valittu.getViimeLeikki()));
+                if(valittu.pitkaAikaSyotosta()){
+                    lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()+" on nälkäinen."));
+                }
+                if (valittu.pitkaAikaLeikista()){
+                    lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()+" on tylsistynyt."));
+                }
+                lemmikkiIkkuna.setAlignment(Pos.CENTER);
+                pohja.setCenter(lemmikkiIkkuna);
+            }
+        });
+
+        ruokiNappi.setOnAction(e -> {
+            if(!lemmikkiValinta.getValue().equals("Ei lemmikkejä")) {
+                String nimi = lemmikkiValinta.getValue();
+                int listanJasen = 0;
+                //System.out.println(nimi);
+                Lemmikki valittu = null;
+                for (int i = 0; i < lemmikkilista.size(); i++) {
+                    if (lemmikkilista.get(i).getNimi().equals(nimi)) {
+                        valittu = lemmikkilista.get(i);
+                        listanJasen = i;
+                    }
+                }
+                valittu.setViimeSyotto();
+                //TODO
+                // Väliaikainen muotoilu, loppuversioon kuvat
+                valittu = lemmikkilista.get(listanJasen);
+                VBox lemmikkiIkkuna = new VBox();
+                lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()));
+                lemmikkiIkkuna.getChildren().add(new Label(valittu.getLaji()));
+                // System.out.println("aikaa viime syötöstä " + (System.currentTimeMillis()-valittu.getViimeSyotto()));
+                if(valittu.pitkaAikaSyotosta()){
+                    lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()+" on nälkäinen."));
+                }
+                if (valittu.pitkaAikaLeikista()){
+                    lemmikkiIkkuna.getChildren().add(new Label(valittu.getNimi()+" on tylsistynyt."));
+                }
+                lemmikkiIkkuna.setAlignment(Pos.CENTER);
+                pohja.setCenter(lemmikkiIkkuna);
+            }
+        });
+        ikkuna.setOnCloseRequest(e ->{
+            ObjectOutputStream kTiedosto = null;
+            try{
+                kTiedosto = new ObjectOutputStream(new FileOutputStream(tiedostoNimi));
+                kTiedosto.writeObject(lemmikkilista);
+            }catch(IOException exception){
+                exception.printStackTrace();
+            }
+        });
     }
 }

@@ -56,15 +56,33 @@ public class Lemmikki implements Serializable {
     }
 
     public boolean pitkaAikaSyotosta(){
-        if(viimeSyotto < (getViimeSyotto()-10800000/* 3h */)){
+        /*
+        // 3h
+        if(viimeSyotto < (getViimeSyotto()-10800000)){
             return true;
         } else {
            return false;
         }
+        */
+        // 6 s debuggaukseen
+        if(System.currentTimeMillis() > getViimeSyotto() + 6000){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean pitkaAikaLeikista(){
-        if (viimeLeikki < (getViimeLeikki()-5400000/* 1.5 h */)){
+        /*
+        // 1.5 h
+        if (viimeLeikki < (getViimeLeikki()-5400000)){
+            return true;
+        } else {
+            return false;
+        }
+        */
+        // 3 s debuggaukseen
+        if (System.currentTimeMillis() > getViimeLeikki()+3000){
             return true;
         } else {
             return false;
